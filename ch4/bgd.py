@@ -19,7 +19,9 @@ import matplotlib.pyplot as plt
 #    alpha     - learning rate ( in [0, 1] )
 #    epsilon   - minimum change in cost from step i to i + 1
 #                in order to continue ( in [0, 1) )
-def bgd(y, X, alpha, epsilon):
+#    n_itr     - used to fix the number of iterations to run,
+#                not used if -1
+def bgd(y, X, alpha, epsilon, n_itr=-1):
     # initialize our "guess" for each coefficient theta_j to 1
     # and store these in a single column
     theta = np.ones(shape=(X.shape[1], 1))
@@ -42,7 +44,7 @@ def bgd(y, X, alpha, epsilon):
     i = 0 # number of iterations
     delta = 1 # change in cost
     
-    while (delta > epsilon):
+    while (delta > epsilon and (n_itr == -1 or i < n_itr)):
         
         # calculate a column that holds the difference between y_hat and
         # y for each data point
@@ -59,9 +61,6 @@ def bgd(y, X, alpha, epsilon):
         costs.append(cost[0][0] / (2 * m))
         delta = abs(costs[i + 1] - costs[i])
         
-        if (costs[i + 1] > costs[i]):
-            print('Cost is increasing. Try reducing alpha.')
-            break
         i += 1
         
     print('Completed in', i, 'iterations.')
@@ -102,11 +101,15 @@ X = X.to_numpy()
 y = y.to_numpy()
 
 # let's fix epsilon at 10^-5 and see which values of alpha
-# result in convergence
-plot_model(bgd(y=y, X=X, alpha=0.1, epsilon=10**-5)[-1], color=(0.25,0,0))
-plot_model(bgd(y=y, X=X, alpha=0.07, epsilon=10**-5)[-1], color=(0.5,0,0))
-plot_model(bgd(y=y, X=X, alpha=0.04, epsilon=10**-5)[-1], color=(0.75,0,0))
-plot_model(bgd(y=y, X=X, alpha=0.01, epsilon=10**-5)[-1], color=(1,0,0))
+# result in a reasonable fit within 5 iterations
+fix_itr = 5
+# 0.02 is too high--the algorithm skips over the minimum cost
+plot_model(bgd(y=y, X=X, alpha=0.02, epsilon=10**-5, n_itr=fix_itr)[-1], color=(0.25,0,0))
+# 0.01 gives us a reasonable fit
+plot_model(bgd(y=y, X=X, alpha=0.01, epsilon=10**-5, n_itr=fix_itr)[-1], color=(0.5,0,0))
+# these last two adjust too slowly for our data
+plot_model(bgd(y=y, X=X, alpha=0.001, epsilon=10**-5, n_itr=fix_itr)[-1], color=(0.75,0,0))
+plot_model(bgd(y=y, X=X, alpha=0.0001, epsilon=10**-5, n_itr=fix_itr)[-1], color=(1,0,0))
 
 
 

@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
 """
-Created on Fri Mar 26 15:05:06 2021
+Created on Sun Apr 18 21:57:34 2021
 
 @author: saeli
 """
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
-    
-# builds a regression model with batch gradient descent
+
+# builds a regression model with online stochastic gradient descent
 # and returns a list of vectors of estimated coefficients for each 
 # predictor parameter, ending in the most recently estimated vector,
 # which should be used as the model
@@ -17,11 +17,8 @@ import matplotlib.pyplot as plt
 #    X         - columns for predictor variables
 #    y         - column for outcome variable
 #    alpha     - learning rate ( in [0, 1] )
-#    epsilon   - minimum change in cost from step i to i + 1
-#                in order to continue ( in [0, 1) )
-#    n_itr     - used to fix the number of iterations to run,
-#                not used if -1
-def bgd(y, X, alpha, epsilon, n_itr=-1):
+#    n_itr     - used to fix the number of iterations to run
+def sgd(y, X, alpha, n_itr=50):
     # initialize our "guess" for each coefficient theta_j to 1
     # and store these in a single column
     theta = np.ones(shape=(X.shape[1], 1))
@@ -30,40 +27,31 @@ def bgd(y, X, alpha, epsilon, n_itr=-1):
     
     m = X.shape[0] # number of data points
     
-    # calculate a column of predicted y values for each data point
-    y_hat = X @ theta
+    # will hold rows that have not yet been used by this epoch of sgd
+    epoch = []
+    # initialize list of costs 
+    costs = []
     
-    # calculate a 1 by 1 matrix that holds the sum of the squared
-    # differences between each y_hat and y
-    cost = np.transpose(y_hat - y) @ (y_hat - y)
-    # initialize list of costs to contain the cost associated with
-    # our initial coefficients (scaled by 1/2m in accordance with
-    # the cost formula)
-    costs = [cost[0][0] / (2 * m)]
-    
-    i = 0 # number of iterations
-    delta = 1 # change in cost
-    
-    while (delta > epsilon and (n_itr == -1 or i < n_itr)):
+    for i in range(n_itr):
+        if len(epoch) == 0:
+            epoch = [row for row in range(m)]
+            
+        curr_row = epoch.pop(np.random.randint(len(epoch)))
+        # calculate a predicted y value for the randomly chosen row
+        y_hat = (X[curr_row] @ theta)[0]
+        difference = y_hat - y[curr_row]
         
-        # calculate a column that holds the difference between y_hat and
-        # y for each data point
-        differences = X @ theta - y
-        
+        # in sgd, cost is simply the scaled square error for our currently chosen row
+        cost = difference**2 / (2 * m)
+        costs.append(cost)
         # update each theta_j by the partial derivative of the cost with
         # respect to theta_j, scaled by learning rate
-        # Note: np.transpose(X) gives us the observed values (x_j) for
-        #       a parameter j in the j'th row of a matrix
-        theta = theta - (alpha / m) * ((np.transpose(X)) @ differences)
+        updates = [(alpha / m) * difference * X[curr_row]]
+        theta = theta - updates
         thetas.append(theta)
-        # using the updated coefficient values, append the new cost value
-        cost = np.transpose(X @ theta - y) @ (X @ theta - y)
-        costs.append(cost[0][0] / (2 * m))
-        delta = abs(costs[i + 1] - costs[i])
         
-        i += 1
         
-    print('Completed in', i, 'iterations.')
+    print('Completed in', n_itr, 'iterations.')
     return thetas
 
 # set up our predictor / response columns
@@ -74,7 +62,7 @@ y = df[['y']]
 # set up our plotting environment
 plt.xlabel('x')
 plt.ylabel('y')
-plt.title('Batch Gradient Descent')
+plt.title('Stochastic Gradient Descent')
 
 xt = np.arange(0, df.x.max() + 5, 5)
 yt = np.arange(0, df.y.max() + 10, 10)
@@ -100,10 +88,10 @@ def plot_model(theta, color='dimgrey'):
 X = X.to_numpy()
 y = y.to_numpy()
 
-
-thetas = bgd(y=y, X=X, alpha=0.001, epsilon=10**-5)
-for theta in thetas:
-    plot_model(theta, color=(1,0,0,0.15))
-
-
-plt.savefig('bgd_process.png', dpi=300)
+# notice that with a small number of iterations and a relatively large alpha,
+# we get some diversity in the final fit due to the stochastic nature of this
+# algorithm
+for i in range(4):
+    plot_model(sgd(y=y, X=X, alpha=0.05, n_itr=10)[-1], color=((i+1)*0.2,0,0))
+    
+plt.savefig('sgd.png', dpi=300)

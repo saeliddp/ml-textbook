@@ -15,4 +15,6 @@ cost.py - visualizes the evolution of the cost function value through batch
     gradient descent
     -> creates cost.png
     
-sgd.py - contains an implementation of stochastic gradient descent
+sgd.py - contains an implementation of stochastic gradient descent. visualizes
+    how running sgd gives a non-deterministic fit for some data
+    -> creates sgd.png

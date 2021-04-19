@@ -11,7 +11,7 @@ import matplotlib.pyplot as plt
 # performs batch gradient descent, as in the previous example,
 # but returns a list of costs rather than the thetas associated with
 # those costs
-def batch_gradient_descent(y, X, alpha, epsilon):
+def batch_gradient_descent(y, X, alpha, epsilon, n_itr=-1):
     theta = np.ones(shape=(X.shape[1], 1))
     m = X.shape[0]
     
@@ -21,16 +21,13 @@ def batch_gradient_descent(y, X, alpha, epsilon):
     i = 0
     delta = 1
     
-    while (delta > epsilon):
+    while (delta > epsilon and (n_itr == -1 or i < n_itr)):
         theta = theta - (alpha / m) * ((np.transpose(X)) @ (X @ theta - y))
                 
         cost = np.transpose(X @ theta - y) @ (X @ theta - y)
         costs.append(cost[0][0] / (2 * m))
         delta = abs(costs[i + 1] - costs[i])
         
-        if (costs[i + 1] > costs[i]):
-            print('Cost is increasing. Try reducing alpha.')
-            break
         i += 1
         
     print('Completed in', i, 'iterations.')
