@@ -21,3 +21,9 @@ random_forest.py - builds a highly accurate random forest model over the UCI
 naive_bayes.py - applies naive bayes to the banking data set. Compares multinomial
     distribution assumption with Gaussian distribution assumption.
     data: https://archive.ics.uci.edu/ml/datasets/bank+marketing -> bank.csv
+    
+svm.py - provides a comparison between SVM and logistic regression performance
+    on the skin data set. SVM outperforms logistic significantly, at the cost
+    of computation time.
+    data: original https://archive.ics.uci.edu/ml/datasets/skin+segmentation -> Skin_NonSkin.txt
+    After approximately 90% reduction in size -> Skin_NonSkin_small.txt
