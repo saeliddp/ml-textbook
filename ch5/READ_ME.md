@@ -1,8 +1,8 @@
 ### Module Descriptions
 logistic_regression.py - uses logistic regression on the titanic dataset to predict
     survival. Prints accuracy report and ROC curve.
-    -> creates balloons_dt.png
-    data: original https://www.openml.org/d/40945 -> titanic.csv
+    \n\t-> creates balloons_dt.png
+    \ndata: original https://www.openml.org/d/40945 -> titanic.csv
     After preprocessing to get rid of rows with missing data -> titanic_data.csv
 
 softmax_regression.py - makes predictions about 'prog' attribute of hsbdemo data,
