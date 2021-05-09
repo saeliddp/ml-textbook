@@ -12,16 +12,18 @@ from sklearn.metrics import accuracy_score, confusion_matrix
 
 # for graphviz on windows
 import os
+# replace with path to your graphviz executables
 os.environ['PATH'] += os.pathsep + 'C:/Users/saeli/anaconda3/Library/bin/graphviz/'
 
 bal_df = pd.read_csv('balloons.csv')
+
+# convert categorical data to int representations of unique categories
+for col in bal_df.columns:
+    labels, uniques = pd.factorize(bal_df[col])
+    bal_df[col] = labels
+    
 X = bal_df.drop(columns='inflated')
 y = bal_df['inflated']
-X.replace(['YELLOW', 'PURPLE'], [0, 1], inplace=True)
-X.replace(['SMALL', 'LARGE'], [0, 1], inplace=True)
-X.replace(['STRETCH', 'DIP'], [0, 1], inplace=True)
-X.replace(['ADULT', 'CHILD'], [0, 1], inplace=True)
-y.replace(['F', 'T'], [0, 1], inplace=True)
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3)
 
 dtree = DecisionTreeClassifier()

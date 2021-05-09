@@ -13,7 +13,7 @@ from sklearn.metrics import accuracy_score
 hsb_df = pd.read_csv('hsbdemo.csv')
 X = hsb_df[['ses', 'write']]
 y = hsb_df['prog']
-X.replace(['low', 'middle', 'high'], [0, 1, 2], inplace=True)
+X['ses'].replace(['low', 'middle', 'high'], [0, 1, 2], inplace=True)
 y.replace(['general', 'vocation', 'academic'], [0, 1, 2], inplace=True)
 
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.30)
