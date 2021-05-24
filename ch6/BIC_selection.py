@@ -20,8 +20,9 @@ plt.ylabel('BIC Score')
 
 lowest_bic = np.infty
 
-# we'll compare scores for four different CV types and
-# 6 different numbers of components (clusters)
+# we'll compare BIC scores for four different CV types and
+# 6 different numbers of components (clusters) to choose the "best"
+# model
 n_components_range = range(1, 7)
 cv_types = ['spherical', 'tied', 'diag', 'full']
 for cv_type in cv_types:
